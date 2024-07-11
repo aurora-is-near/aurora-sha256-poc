@@ -1,0 +1,23 @@
+[package]
+name = "sha256_poc"
+version = "0.1.0"
+authors = ["Aurora Labs <hello@aurora.dev>"]
+repository = "https://github.com/aurora-is-near/"
+license = "CC0-1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+hex = "0.4"
+aurora-engine-sdk = { git = "https://github.com/aurora-is-near/aurora-engine.git", default-features = false, features = ["contract"] }
+near-sdk = "5.2"
+
+[profile.release]
+codegen-units = 1
+opt-level = 3
+lto = true
+debug = false
+panic = "abort"
+overflow-checks = true

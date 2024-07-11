@@ -1,0 +1,128 @@
+[config]
+default_to_workspace = false
+skip_core_tasks = true
+
+[env]
+CARGO = "cargo"
+CONTRACT_CARGO_TARGET = "wasm32-unknown-unknown"
+WASM_FILE = "contract.wasm"
+NEAR_CLI = "near"
+
+[tasks.clean-cargo]
+category = "Cleanup"
+command = "${CARGO}"
+args = ["clean"]
+
+[tasks.clean-bin]
+category = "Cleanup"
+script = '''
+rm -Rf bin
+'''
+
+[tasks.clean-flow]
+category = "Cleanup"
+dependencies = [
+    "clean-cargo",
+    "clean-bin",
+]
+
+[tasks.clean]
+run_task = "clean-flow"
+
+[tasks.fmt]
+category = "Formatting"
+command = "${CARGO}"
+args = [
+    "fmt",
+    "--all",
+]
+
+[tasks.clippy]
+category = "Check"
+command = "${CARGO}"
+args = [
+    "clippy",
+    "--all-features",
+    "--",
+    "-D",
+    "warnings",
+]
+
+[tasks.check-fmt]
+category = "Check"
+command = "${CARGO}"
+args = [
+    "fmt",
+    "--",
+    "--check",
+]
+
+[tasks.check]
+category = "Check"
+dependencies = [
+    "check-fmt",
+    "clippy",
+]
+
+[tasks.post-contract-build-env]
+category = "Tools"
+script = '''
+echo "Environment:"
+echo "    CARGO_MAKE_PROFILE:   ${CARGO_MAKE_PROFILE}"
+echo "    IS_PROD:              ${IS_PROD}"
+echo "    CARGO_FEATURES:       ${CARGO_FEATURES}"
+echo "    WASM_FILE:            ${WASM_FILE}"
+echo "    TARGET_DIR:           ${TARGET_DIR}"
+echo "    RUSTFLAGS:            ${RUSTFLAGS}"
+echo "    Extra build args:     ${RELEASE} ${@}"
+'''
+
+[tasks.copy-contract-build]
+category = "Post"
+command = "cp"
+args = [
+    "target/wasm32-unknown-unknown/${TARGET_DIR}/sha256_poc.wasm",
+    "bin/${WASM_FILE}",
+]
+
+[tasks.make-bin-directory]
+category = "Post"
+command = "mkdir"
+args = [
+    "-p",
+    "bin",
+]
+
+[tasks.build-contract]
+category = "Build"
+command = "${CARGO}"
+args = [
+    "build",
+    "--target",
+    "${CONTRACT_CARGO_TARGET}",
+    "@@remove-empty(RELEASE)",
+    "--no-default-features",
+    "${@}",
+]
+
+[tasks.build-contract-flow]
+category = "Build"
+dependencies = [
+    "build-contract",
+    "make-bin-directory",
+    "copy-contract-build",
+    "post-contract-build-env",
+]
+
+[tasks.build]
+env = { "RUSTFLAGS" = "-C link-arg=-s", "RELEASE" = "--release", "TARGET_DIR" = "release" }
+category = "Build"
+run_task = "build-contract-flow"
+
+
+[tasks.default]
+run_task = "build"
+
+[tasks.deploy]
+category = "Deploy"
+script = "${NEAR_CLI} deploy --acount-id${NEAR_EVM_ACCOUNT} --wasm-file=bin/${WASM_FILE}"
