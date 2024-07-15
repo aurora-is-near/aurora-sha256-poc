@@ -13,6 +13,7 @@ crate-type = ["cdylib", "rlib"]
 hex = "0.4"
 aurora-engine-sdk = { git = "https://github.com/aurora-is-near/aurora-engine.git", default-features = false, features = ["contract"] }
 near-sdk = "5.2"
+sha2 = "0.10"
 
 [profile.release]
 codegen-units = 1
