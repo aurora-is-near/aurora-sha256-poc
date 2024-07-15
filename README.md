@@ -17,7 +17,25 @@ The hash calculation is done using functions:
 The results of all functions are compared for complete compliance.
 
 After verification, the execution results are output as NEAR transaction logs.
-➡️ Execution results as sample call for NEAR transaction with logs for `testnet`:
+➡️ Execution results as sample call for NEAR transaction with logs
+for `testnet`: [As2hzF71k4wQDqGnJCMQogT2Mv46L96nGM4A4GAKm1ma](https://testnet.nearblocks.io/txns/As2hzF71k4wQDqGnJCMQogT2Mv46L96nGM4A4GAKm1ma)
+
+### Useful commands
+
+- `cargo make build` - build smartcontract
+    - `cargo near build` - another way to build smartcontract
+- `cargo make clippy` - run clippy (linter) check
+- `cargo near create-dev-account` - optional step to create dev-account on `testnet`
+- `near deploy <smart-contract-account-id> bin/contract.wasm` - after build - deploy smartcontract for specific account
+  id
+    - `cargo near deploy` - alternative wat to deploy smartcontract
+- `near call <smart-contract-account-id> get_sha256 --useAccount=<your-signer-account-id>` - call for `get_sha256` for
+  specific smartcontract
+    - `near call dev-aurora-1.testnet get_sha256 --useAccount=<your-signer-account-id>` - call deployed smartcontract
+      for `get_sha256`
+- `near tx-status <tx-hash> <your-signer-account-id>` - get NEAR transaction status for `testnet`
+    - `near tx-status As2hzF71k4wQDqGnJCMQogT2Mv46L96nGM4A4GAKm1ma <your-signer-account-id>` - get already existed
+      transaction that **check sha256-correctness**
 
 ### ⚠️ Important notes
 

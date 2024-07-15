@@ -25,7 +25,7 @@ fn run_hash(value: &[u8], hint: &str) {
             && (res_near.as_slice() == value_hash.as_slice())
     );
     near_sdk::log!(
-        "[Passed] sha256 for '{hint}': {}",
+        "[Passed] sha256 for {hint:?}: {}",
         hex::encode(res_aurora.0)
     );
 }
